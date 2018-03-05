@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
@@ -51,7 +53,8 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'sex' => 'required|boolean',
+            'birthday' => 'required|after:1900-01-01'
         ]);
     }
 
@@ -63,10 +66,15 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        $password = Str::random(10);
+        mail('sokolskih@academy-prof.ru', 'sokolskih@academy-prof.ru', 'Ваш пароль: '.$password);
+
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'sex'=>$data['sex'],
+            'birthday'=>$data['birthday'],
+            'password' => Hash::make($password),
         ]);
     }
 }
